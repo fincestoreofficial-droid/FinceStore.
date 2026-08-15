@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinceStore</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0b0b0f;
+    color: white;
+}
+
+header {
+    padding: 18px 6%;
+    background: #15151d;
+    border-bottom: 1px solid #292936;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #8b6cff;
+}
+
+.admin-btn {
+    background: #7c5cff;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.hero {
+    text-align: center;
+    padding: 55px 20px;
+    background: linear-gradient(135deg, #151522, #0b0b0f);
+}
+
+.hero h1 {
+    margin: 0 0 10px;
+    font-size: 38px;
+}
+
+.hero p {
+    color: #aaa;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    padding: 35px 0 60px;
+}
+
+.card {
+    background: #15151d;
+    border: 1px solid #292936;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    background: #222;
+}
+
+.card-body {
+    padding: 17px;
+}
+
+.card h3 {
+    margin: 0 0 10px;
+}
+
+.desc {
+    color: #aaa;
+    font-size: 14px;
+    min-height: 40px;
+    white-space: pre-line;
+}
+
+.price {
+    color: #9a86ff;
+    font-size: 21px;
+    font-weight: bold;
+    margin: 15px 0 10px;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 6px;
+    background: #173b24;
+    color: #6dff9b;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.status.sold {
+    background: #401c1c;
+    color: #ff7777;
+}
+
+.buy {
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    background: #25d366;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.buy:disabled {
+    background: #444;
+    cursor: not-allowed;
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    padding: 60px 0;
+}
+
+/* ADMIN */
+
+#adminPanel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0,0,0,.9);
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.admin-box {
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    background: #15151d;
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 22px;
+}
+
+.admin-box h2 {
+    margin-top: 0;
+}
+
+.section {
+    border-top: 1px solid #333;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+label {
+    display: block;
+    color: #bbb;
+    margin-top: 12px;
+    margin-bottom: 6px;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 11px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #0d0d12;
+    color: white;
+    outline: none;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #7c5cff;
+}
+
+#imagePreview {
+    width: 100%;
+    max-height: 230px;
+    object-fit: contain;
+    margin-top: 12px;
+    border-radius: 10px;
+    background: #0b0b0f;
+    display: none;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.button-row button {
+    flex: 1;
+    min-width: 120px;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.save {
+    background: #7c5cff;
+    color: white;
+}
+
+.close {
+    background: #444;
+    color: white;
+}
+
+.reset {
+    background: #333;
+    color: white;
+}
+
+.admin-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #20202a;
+    padding: 10px;
+    border-radius: 9px;
+    margin-top: 9px;
+}
+
+.admin-product img {
+    width: 65px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 7px;
+}
+
+.admin-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-info b {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-info small {
+    color: #aaa;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.admin-actions button {
+    border: none;
+    padding: 7px 9px;
+    border-radius: 6px;
+    color: white;
+}
+
+.edit {
+    background: #6650d9;
+}
+
+.delete {
+    background: #c73535;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #666;
+    border-top: 1px solid #222;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo" id="logo">Fince<span>Store</span></div>
+
+    <button class="admin-btn" onclick="openAdmin()">
+        ⚙️ Admin
+    </button>
+</header>
+
+<section class="hero">
+    <h1 id="heroTitle">FinceStore</h1>
+    <p>Marketplace Blox Fruits</p>
+</section>
+
+<div class="container">
+    <div class="products" id="products"></div>
+</div>
+
+<footer>
+    <span id="footerName">FinceStore</span> © 2026
+</footer>
+
+
+<!-- ADMIN PANEL -->
+
+<div id="adminPanel">
+
+<div class="admin-box">
+
+<h2>⚙️ Panel Admin</h2>
+
+<!-- PRODUK -->
+
+<div class="section">
+
+<h3>📦 Produk</h3>
+
+<label>Nama Produk</label>
+<input id="productName" placeholder="Contoh: Account Kitsune">
+
+<label>Deskripsi</label>
+<textarea id="productDescription"
+placeholder="Lv 2550 | Kitsune | Godhuman"></textarea>
+
+<label>Harga</label>
+<input id="productPrice" type="number" placeholder="150000">
+
+<label>Status</label>
+<select id="productStatus">
+    <option value="available">AVAILABLE</option>
+    <option value="sold">SOLD</option>
+</select>
+
+<label>Foto Produk</label>
+<input id="imageFile" type="file" accept="image/*">
+
+<img id="imagePreview">
+
+<div class="button-row">
+    <button class="save" onclick="saveProduct()">
+        💾 Simpan Produk
+    </button>
+
+    <button class="reset" onclick="clearForm()">
+        🧹 Bersihkan
+    </button>
+</div>
+
+</div>
+
+
+<!-- PENGATURAN TOKO -->
+
+<div class="section">
+
+<h3>⚙️ Pengaturan Toko</h3>
+
+<label>Nama Toko</label>
+<input id="storeName" placeholder="FinceStore">
+
+<label>Nomor WhatsApp</label>
+<input id="whatsappNumber"
+placeholder="6281234567890">
+
+<p style="color:#888;font-size:12px;">
+Gunakan format 62xxxxxxxxxx tanpa tanda +.
+</p>
+
+<button class="save"
+style="width:100%;padding:11px;border:0;border-radius:8px;"
+onclick="saveSettings()">
+💾 Simpan Pengaturan
+</button>
+
+</div>
+
+
+<!-- DAFTAR PRODUK -->
+
+<div class="section">
+
+<h3>📋 Daftar Produk</h3>
+
+<div id="adminProducts"></div>
+
+</div>
+
+
+<div class="button-row">
+
+<button class="close" onclick="closeAdmin()">
+Tutup Panel
+</button>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+
+var products = [];
+
+window.receiveFirebaseProducts = function(firebaseProducts) {
+
+    products = firebaseProducts;
+
+    renderProducts();
+
+};
+
+let settings =
+JSON.parse(localStorage.getItem("fince_settings")) || {
+    storeName: "FinceStore",
+    whatsapp: "628XXXXXXXXXX"
+};
+
+let editingId = null;
+let uploadedImage = "";
+
+
+/* =========================
+   FORMAT RUPIAH
+========================= */
+
+function rupiah(number) {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+    }).format(number);
+}
+
+
+/* =========================
+   SIMPAN DATA
+========================= */
+
+function saveData() {
+
+    localStorage.setItem(
+        "fince_products",
+        JSON.stringify(products)
+    );
+
+}
+
+/* =========================
+   TAMPILKAN TOKO
+========================= */
+
+function renderProducts() {
+
+    const box = document.getElementById("products");
+
+    box.innerHTML = "";
+
+    if (products.length === 0) {
+
+        box.innerHTML = `
+            <div class="empty">
+                Belum ada produk.
+            </div>
+        `;
+
+        return;
+    }
+
+    products.forEach(product => {
+
+        const sold = product.status === "sold";
+
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        card.innerHTML = `
+            <img src="${product.image || 'https://placehold.co/600x400'}">
+
+            <div class="card-body">
+
+                <h3>${escapeHTML(product.name || "Tanpa Nama")}</h3>
+
+                <div class="desc">
+                    ${escapeHTML(product.description || "")}
+                </div>
+
+                <div class="price">
+                    ${rupiah(product.price || 0)}
+                </div>
+
+                <div class="status ${sold ? "sold" : ""}">
+                    ${sold ? "SOLD" : "AVAILABLE"}
+                </div>
+
+                <button class="buy" ${sold ? "disabled" : ""}>
+                    ${sold ? "Sudah Terjual" : "🛒 Beli via WhatsApp"}
+                </button>
+
+            </div>
+        `;
+
+        if (!sold) {
+
+            card.querySelector(".buy").onclick =
+            function() {
+                buyProduct(product.id);
+            };
+
+        }
+
+        box.appendChild(card);
+
+    });
+
+}
+
+/* =========================
+   WHATSAPP
+========================= */
+
+function buyProduct(id) {
+
+    const product =
+        products.find(p => p.id === id);
+
+    if (!product) return;
+
+    if (
+        !settings.whatsapp ||
+        settings.whatsapp.includes("X")
+    ) {
+
+        alert(
+            "Nomor WhatsApp belum diatur di Panel Admin!"
+        );
+
+        return;
+    }
+
+    const text =
+`Halo ${settings.storeName}!
+
+Saya tertarik membeli:
+
+🎮 Produk: ${product.name}
+💰 Harga: ${rupiah(product.price)}
+
+Apakah akun ini masih tersedia?`;
+
+    const url =
+        "https://wa.me/" +
+        settings.whatsapp +
+        "?text=" +
+        encodeURIComponent(text);
+
+    window.open(url, "_blank");
+
+}
+
+
+/* =========================
+   ADMIN LOGIN
+========================= */
+
+async function openAdmin() {
+
+    const email =
+        prompt("Email admin Firebase:");
+
+    if (!email) {
+        return;
+    }
+
+
+    const password =
+        prompt("Password admin Firebase:");
+
+    if (!password) {
+        return;
+    }
+
+
+    try {
+
+        await window.firebaseLogin(
+    email,
+    password
+);
+
+        document.getElementById(
+            "adminPanel"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "storeName"
+        ).value = settings.storeName;
+
+
+        document.getElementById(
+            "whatsappNumber"
+        ).value = settings.whatsapp;
+
+
+        renderAdmin();
+
+
+    } catch (error) {
+
+        console.error(
+            "LOGIN FIREBASE ERROR:",
+            error
+        );
+
+        alert(
+            "Login gagal:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+function closeAdmin() {
+
+    document.getElementById(
+        "adminPanel"
+    ).style.display = "none";
+
+}
+
+
+/* =========================
+   UPLOAD FOTO
+========================= */
+
+document.getElementById("imageFile")
+.addEventListener("change", function() {
+
+    const file = this.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+
+        alert("File harus berupa gambar!");
+
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+
+        const img = new Image();
+
+        img.onload = function() {
+
+            const canvas =
+                document.createElement("canvas");
+
+            const maxWidth = 900;
+
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth) {
+
+                height =
+                    height * maxWidth / width;
+
+                width = maxWidth;
+
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx =
+                canvas.getContext("2d");
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                width,
+                height
+            );
+
+            uploadedImage =
+                canvas.toDataURL(
+                    "image/jpeg",
+                    0.75
+                );
+
+            const preview =
+                document.getElementById(
+                    "imagePreview"
+                );
+
+            preview.src = uploadedImage;
+
+            preview.style.display = "block";
+
+        };
+
+        img.src = event.target.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
+/* =========================
+   SIMPAN PRODUK
+========================= */
+
+async function saveProduct() {
+
+    const name =
+        document.getElementById("productName").value.trim();
+
+    const description =
+        document.getElementById("productDescription").value.trim();
+
+    const price =
+        Number(
+            document.getElementById("productPrice").value
+        );
+
+    const status =
+        document.getElementById("productStatus").value;
+
+
+    if (!name) {
+        alert("Nama produk belum diisi!");
+        return;
+    }
+
+    if (!price || price <= 0) {
+        alert("Harga belum benar!");
+        return;
+    }
+
+
+    // =========================
+    // PRODUK BARU → FIREBASE
+    // =========================
+
+if (editingId !== null) {
+
+    const berhasil =
+        await window.updateProductInFirebase(
+            editingId,
+            {
+                name: name,
+                description: description,
+                price: price,
+                status: status,
+                image: uploadedImage
+            }
+        );
+
+    if (!berhasil) {
+        return;
+    }
+
+    alert("Produk berhasil diperbarui di Firebase!");
+
+    clearForm();
+
+    renderAdmin();
+
+    return;
+}
+
+    if (editingId === null) {
+
+        if (!uploadedImage) {
+            alert("Pilih foto produk dulu!");
+            return;
+        }
+
+        const berhasil =
+            await window.addProductToFirebase({
+
+                name: name,
+
+                description: description,
+
+                price: price,
+
+                status: status,
+
+                image: uploadedImage
+
+            });
+
+
+        if (!berhasil) {
+            return;
+        }
+
+
+        alert("Produk berhasil ditambahkan ke Firebase!");
+
+        clearForm();
+
+        renderAdmin();
+
+        return;
+    }
+
+
+    // EDIT KITA URUS DI STEP BERIKUTNYA
+
+    alert("Mode edit belum kita sambungkan ke Firebase.");
+
+}
+
+
+/* =========================
+   EDIT PRODUK
+========================= */
+
+function editProduct(id) {
+
+    const product =
+        products.find(
+            p => p.id === id
+        );
+
+    if (!product) return;
+
+    editingId = id;
+
+    document.getElementById(
+        "productName"
+    ).value = product.name;
+
+    document.getElementById(
+        "productDescription"
+    ).value = product.description;
+
+    document.getElementById(
+        "productPrice"
+    ).value = product.price;
+
+    document.getElementById(
+        "productStatus"
+    ).value = product.status;
+
+    uploadedImage = product.image;
+
+    const preview =
+        document.getElementById(
+            "imagePreview"
+        );
+
+    preview.src = product.image;
+
+    preview.style.display = "block";
+
+    window.scrollTo(0, 0);
+
+}
+
+
+/* =========================
+   HAPUS PRODUK
+========================= */
+
+async function deleteProduct(id) {
+
+    const product =
+        products.find(
+            p => p.id === id
+        );
+
+    if (!product) return;
+
+    const yakin =
+        confirm(
+            "Hapus " +
+            product.name +
+            "?"
+        );
+
+    if (!yakin) return;
+
+
+    const berhasil =
+        await window.deleteProductFromFirebase(id);
+
+
+    if (!berhasil) {
+        return;
+    }
+
+
+    alert(
+        "Produk berhasil dihapus dari Firebase!"
+    );
+
+
+    renderAdmin();
+
+}
+
+
+/* =========================
+   DAFTAR ADMIN
+========================= */
+
+function renderAdmin() {
+
+    const box =
+        document.getElementById(
+            "adminProducts"
+        );
+
+    box.innerHTML = "";
+
+    if (products.length === 0) {
+
+        box.innerHTML =
+            `<p style="color:#777">
+                Belum ada produk.
+            </p>`;
+
+        return;
+    }
+
+
+    products.forEach(product => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "admin-product";
+
+        item.innerHTML = `
+
+            <img src="${product.image}">
+
+            <div class="admin-info">
+
+                <b>
+                    ${escapeHTML(product.name)}
+                </b>
+
+                <small>
+                    ${rupiah(product.price)}
+                </small>
+
+            </div>
+
+            <div class="admin-actions">
+
+                <button
+                    class="edit"
+                    onclick="editProduct('${product.id}')">
+                    Edit
+                </button>
+
+                <button
+    class="delete"
+    onclick="deleteProduct('${product.id}')">
+    Hapus
+</button>
+
+            </div>
+        `;
+
+        box.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================
+   PENGATURAN TOKO
+========================= */
+
+function saveSettings() {
+
+    const name =
+        document.getElementById(
+            "storeName"
+        ).value.trim();
+
+    const whatsapp =
+        document.getElementById(
+            "whatsappNumber"
+        ).value.trim();
+
+
+    if (!name) {
+
+        alert("Nama toko belum diisi!");
+
+        return;
+    }
+
+    if (!whatsapp) {
+
+        alert("Nomor WhatsApp belum diisi!");
+
+        return;
+    }
+
+
+    settings.storeName = name;
+    settings.whatsapp = whatsapp;
+
+    localStorage.setItem(
+        "fince_settings",
+        JSON.stringify(settings)
+    );
+
+
+    document.getElementById(
+        "heroTitle"
+    ).textContent = name;
+
+    document.getElementById(
+        "footerName"
+    ).textContent = name;
+
+    document.getElementById(
+        "logo"
+    ).innerHTML =
+        name + "<span>Store</span>";
+
+
+    alert("Pengaturan berhasil disimpan!");
+
+}
+
+
+/* =========================
+   BERSIHKAN FORM
+========================= */
+
+function clearForm() {
+
+    editingId = null;
+
+    uploadedImage = "";
+
+    document.getElementById(
+        "productName"
+    ).value = "";
+
+    document.getElementById(
+        "productDescription"
+    ).value = "";
+
+    document.getElementById(
+        "productPrice"
+    ).value = "";
+
+    document.getElementById(
+        "productStatus"
+    ).value = "available";
+
+    document.getElementById(
+        "imageFile"
+    ).value = "";
+
+    document.getElementById(
+        "imagePreview"
+    ).style.display = "none";
+
+}
+
+
+/* =========================
+   ANTI HTML ERROR
+========================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.getElementById(
+    "heroTitle"
+).textContent = settings.storeName;
+
+document.getElementById(
+    "footerName"
+).textContent = settings.storeName;
+
+document.getElementById(
+    "logo"
+).innerHTML =
+    settings.storeName +
+    "<span>Store</span>";
+
+renderProducts();
+
+</script>
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc
+}
+from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyDpgqpES1IuL1dTItV6vlzW86Zllc9KL1c",
+
+    authDomain:
+        "fincestore-b3d83.firebaseapp.com",
+
+    projectId:
+        "fincestore-b3d83",
+
+    storageBucket:
+        "fincestore-b3d83.firebasestorage.app",
+
+    messagingSenderId:
+        "837482527680",
+
+    appId:
+        "1:837482527680:web:08f7011baa7728ba06e625",
+
+    measurementId:
+        "G-2TFZDK2EK3"
+};
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+const db =
+    getFirestore(app);
+
+const auth = getAuth(app);
+
+window.firebaseLogin = async function(email, password) {
+
+    return await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+    );
+
+};
+
+onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+        console.log("ADMIN LOGIN:", user.email);
+    } else {
+        console.log("BELUM LOGIN ADMIN");
+    }
+
+});
+
+// =========================
+// FIREBASE CRUD
+// =========================
+
+window.addProductToFirebase = async function(product) {
+
+    try {
+
+        const docRef = await addDoc(
+            collection(db, "products"),
+            {
+                Name: product.name,
+                Price: Number(product.price),
+                Image: product.image || "",
+                Description: product.description || "",
+                Status: product.status || "available"
+            }
+        );
+
+        console.log(
+            "Produk berhasil ditambahkan:",
+            docRef.id
+        );
+
+        await loadProductsFromFirebase();
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "GAGAL TAMBAH PRODUK:",
+            error
+        );
+
+        alert(
+            "Gagal menambahkan produk:\n" +
+            error.message
+        );
+
+        return false;
+    }
+};
+
+
+window.updateProductInFirebase = async function(
+    id,
+    product
+) {
+
+    try {
+
+        await updateDoc(
+            doc(db, "products", id),
+            {
+                Name: product.name,
+                Price: Number(product.price),
+                Image: product.image || "",
+                Description: product.description || "",
+                Status: product.status || "available"
+            }
+        );
+
+        console.log(
+            "Produk berhasil diperbarui:",
+            id
+        );
+
+        await loadProductsFromFirebase();
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "GAGAL UPDATE PRODUK:",
+            error
+        );
+
+        alert(
+            "Gagal memperbarui produk:\n" +
+            error.message
+        );
+
+        return false;
+    }
+};
+
+
+window.deleteProductFromFirebase = async function(id) {
+
+    try {
+
+        await deleteDoc(
+            doc(db, "products", id)
+        );
+
+        console.log(
+            "Produk berhasil dihapus:",
+            id
+        );
+
+        await loadProductsFromFirebase();
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "GAGAL HAPUS PRODUK:",
+            error
+        );
+
+        alert(
+            "Gagal menghapus produk:\n" +
+            error.message
+        );
+
+        return false;
+    }
+};
+
+/* =========================
+   AMBIL PRODUK FIREBASE
+========================= */
+
+async function loadProductsFromFirebase() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "products")
+            );
+
+
+        const firebaseProducts = [];
+
+
+        snapshot.forEach((firebaseDoc) => {
+
+            const data = firebaseDoc.data();
+
+firebaseProducts.push({
+
+    id: firebaseDoc.id,
+
+    name: data.Name || "",
+    price: data.Price || 0,
+    image: data.Image || "",
+    description: data.Description || "",
+    status: data.Status || "available"
+
+});
+
+        });
+
+
+        console.log(
+            "JUMLAH PRODUK FIREBASE:",
+            firebaseProducts.length
+        );
+
+
+        /* =========================
+           MASUKKAN KE PRODUCTS UTAMA
+        ========================= */
+
+        window.products.length = 0;
+
+        window.products.push(
+            ...firebaseProducts
+        );
+
+
+        /* =========================
+           TAMPILKAN PRODUK
+        ========================= */
+
+        window.renderProducts();
+
+
+        alert(
+            "Firebase menemukan " +
+            firebaseProducts.length +
+            " produk"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "FIREBASE ERROR:",
+            error
+        );
+
+
+        alert(
+            "FIREBASE ERROR:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+loadProductsFromFirebase();
+
+</script>
+
+</body>
+</html>
